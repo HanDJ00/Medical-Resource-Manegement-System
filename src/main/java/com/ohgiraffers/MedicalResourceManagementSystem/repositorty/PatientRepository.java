@@ -1,19 +1,20 @@
 package com.ohgiraffers.MedicalResourceManagementSystem.repositorty;
 
 import com.ohgiraffers.MedicalResourceManagementSystem.aggregate.Patient;
+import com.ohgiraffers.MedicalResourceManagementSystem.stream.MyObjectOutputStream;
 
 import java.io.*;
 import java.util.ArrayList;
 
 public class PatientRepository {
     private final ArrayList<Patient> patientsList = new ArrayList<>();
-    private static final String PATIENT_FILE_PATH = "src/main/java/com/MedicalResourceManagementSystem/aggregate/db/patientDB.dat";
+    private static final String PATIENT_FILE_PATH = "src/main/java/com/ohgiraffers/MedicalResourceManagementSystem/db/patientDB.dat";
 
     public PatientRepository() {
 
         File file = new File(PATIENT_FILE_PATH);
 
-        if (file.exists()) {
+        if (!file.exists()) {
             ArrayList<Patient> patients = new ArrayList<>();
             patients.add(new Patient(1, "김길남", 57, 'M', 1, "퇴행성 관절염", 712, 'N'));
             patients.add(new Patient(2, "박옥순", 30, 'Y', 1, "류마티스 관절염", 702, 'N'));
@@ -60,17 +61,49 @@ public class PatientRepository {
 
     private void savePatients(File file, ArrayList<Patient> patients) {
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
 
-            while (true) {
-                patientsList.add((Patient) ois.readObject());
+            for (Patient patient : patients) {
+                oos.writeObject(patient);
             }
 
-        } catch (EOFException e) {
-            System.out.println("환자 정보를 모두 로딩하였습니다.");
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public ArrayList<Patient> selectAllUsers() {
+        return patientsList;
+    }
+
+    public Patient selectUserByNo(int no) {
+        for (Patient patient : patientsList) {
+            if(patient.getPatient_no() == no) {
+                return patient;
+            }
+        }
+        return null;
+    }
+
+    public int selectLastPatientNo() {
+        Patient lastPatient = patientsList.get(patientsList.size()-1);
+        return lastPatient.getPatient_no();
+    }
+
+    public int insertPatient(Patient patient) {
+
+        int result = 0;
+
+        try (MyObjectOutputStream moos = new MyObjectOutputStream(new FileOutputStream(PATIENT_FILE_PATH, true))) {
+
+            moos.writeObject(patient);
+            patientsList.add(patient);
+            result = 1;
+
+        }  catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return result;
+    }
 }

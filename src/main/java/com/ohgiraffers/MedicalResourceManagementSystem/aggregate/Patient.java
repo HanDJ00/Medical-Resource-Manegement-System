@@ -14,7 +14,7 @@ public class Patient implements Serializable {
     private int patient_hospital_bed;
     private char expenses_received;
 
-    public Patient() {}
+    public Patient(String patient_name, int patient_age, char patient_gender, int doctor_no, String patient_diagnostic, int patient_hospital_bed, char expenses_received) {}
 
     public Patient(int patient_no, String patient_name, int patient_age, char patient_gender, int doctor_no, String patient_diagnostic, int patient_hospital_bed, char expenses_received) {
         this.patient_no = patient_no;

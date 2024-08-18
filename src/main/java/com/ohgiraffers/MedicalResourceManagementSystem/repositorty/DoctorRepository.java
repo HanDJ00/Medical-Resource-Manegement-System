@@ -4,18 +4,19 @@ import com.ohgiraffers.MedicalResourceManagementSystem.aggregate.Doctor;
 import com.ohgiraffers.MedicalResourceManagementSystem.aggregate.Patient;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+
 public class DoctorRepository {
+
     private final ArrayList<Doctor> doctorsList = new ArrayList<>();
-    private static final String DOCTOR_FILE_PATH = "src/main/java/com/MedicalResourceManagementSystem/aggregate/db/doctorDB.dat";
+    private static final String DOCTOR_FILE_PATH = "src/main/java/com/ohgiraffers/MedicalResourceManagementSystem/db/doctorDB.dat";
 
     public DoctorRepository() {
 
         File file = new File(DOCTOR_FILE_PATH);
 
-        if (file.exists()) {
+        if (!file.exists()) {
             ArrayList <Doctor> doctors = new ArrayList<>();
             doctors.add(new Doctor(1,"장두팔",45,'M',"정형외과","교수"));
             doctors.add(new Doctor(2,"이미나",26,'W',"내과","인턴 1년차"));
@@ -48,21 +49,29 @@ public class DoctorRepository {
         }
     }
 
-    private void saveDoctors(File file, ArrayList<Doctor> doctors) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
 
-            while(true) {
-                doctorsList.add((Doctor) ois.readObject());
+    private void saveDoctors(File file, ArrayList<Doctor> doctors) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+
+            for (Doctor doctor : doctors) {
+                oos.writeObject(doctor);
             }
 
-
-
-        } catch(EOFException e) {
-            System.out.println("회원 정보를 모두 로딩하였습니다.");
-        }
-
-        catch (IOException | ClassNotFoundException e){
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ArrayList<Doctor> selectAllUsers() {
+        return doctorsList;
+    }
+
+    public Doctor selectUserByNo(int no) {
+        for (Doctor doctor : doctorsList) {
+            if(doctor.getDoctor_no() == no) {
+                return doctor;
+            }
+        }
+        return null;
     }
 }

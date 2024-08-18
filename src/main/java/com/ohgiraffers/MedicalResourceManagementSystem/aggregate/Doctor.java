@@ -1,8 +1,9 @@
 package com.ohgiraffers.MedicalResourceManagementSystem.aggregate;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Doctor {
+public class Doctor implements Serializable {
 
     private int doctor_no;
     private String doctor_name;
